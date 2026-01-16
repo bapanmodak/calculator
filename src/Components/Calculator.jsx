@@ -6,6 +6,11 @@ export default function Calculator() {
   const [history, setHistory] = useState("");
 
   const handleClick = (val) => {
+    // Mobile vibration logic
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(50); // 50 milliseconds vibration
+    }
+
     if (val === "C") {
       setValue("");
       setHistory("");
@@ -17,7 +22,6 @@ export default function Calculator() {
     }
     if (val === "=") {
       try {
-        // Safe evaluation of the expression
         const result = String(Function(`"use strict"; return (${value})`)());
         setHistory(value);
         setValue(result);
@@ -29,7 +33,7 @@ export default function Calculator() {
     setValue((prev) => prev + val);
   };
 
-  // Handling Keyboard Events
+  // Keyboard Support
   useEffect(() => {
     const handleKeyDown = (event) => {
       const { key } = event;
@@ -69,29 +73,25 @@ export default function Calculator() {
   ];
 
   return (
-    // Main container: Full viewport width and height
     <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900 via-slate-900 to-black p-0 sm:p-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        // Full width on mobile (w-full), max-width on larger screens (max-w-md)
-        className="w-full h-full sm:h-auto sm:max-w-[400px] bg-slate-900/80 backdrop-blur-2xl flex flex-col shadow-2xl overflow-hidden sm:rounded-3xl border border-white/10"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full h-full sm:h-auto sm:max-w-[400px] bg-slate-900/80 backdrop-blur-2xl flex flex-col shadow-2xl sm:rounded-3xl border border-white/10"
       >
-        {/* Display Section: Pushes buttons to bottom on mobile */}
         <div className="flex-grow flex flex-col justify-end p-6 sm:p-8">
-          <div className="text-right text-lg text-purple-400 font-mono mb-2 h-8 overflow-hidden">
+          <div className="text-right text-lg text-purple-400 font-mono mb-2 h-8">
             {history}
           </div>
-          <div className="text-right text-6xl sm:text-5xl text-white font-bold font-mono break-all leading-tight">
+          <div className="text-right text-6xl sm:text-5xl text-white font-bold font-mono">
             {value || "0"}
           </div>
         </div>
 
-        {/* Buttons Grid Section */}
         <div className="bg-slate-800/50 p-4 sm:p-6 grid grid-cols-4 gap-3 sm:gap-4 rounded-t-[3rem] sm:rounded-t-none">
           {buttons.map((btn, i) => (
             <motion.button
-              whileTap={{ scale: 0.92 }}
+              whileTap={{ scale: 0.95 }}
               key={i}
               onClick={() => handleClick(btn.val)}
               style={{ gridColumn: `span ${btn.span}` }}
